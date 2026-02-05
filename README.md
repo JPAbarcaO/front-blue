@@ -129,6 +129,10 @@ http://localhost:4200/
 - `@components/*` → `src/app/components/*`
 - `@app/*` → `src/app/*`
 
+**Documentación útil**
+
+- PrimeNG Tabs (v20): `https://v20.primeng.org/tabs`
+
 **Comandos útiles**
 
 ```bash
