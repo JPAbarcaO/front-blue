@@ -64,7 +64,7 @@ export class GalleryComponent implements OnInit {
     this.currentUser = this.authService.getCurrentUser();
     this.loadImage();
     if (this.currentUser) {
-      this.loadProtectedItems();
+      this.fetchTabData(this.activeTab);
     }
   }
 
@@ -204,57 +204,79 @@ export class GalleryComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  private loadProtectedItems(): void {
+  onTabChange(value: string | number | undefined): void {
+    const nextValue = typeof value === 'string' ? value : `${value ?? ''}`;
+    this.activeTab = nextValue || 'top-like';
+    if (this.currentUser) {
+      this.fetchTabData(this.activeTab);
+    }
+  }
+
+  private fetchTabData(tab: string): void {
     const token = this.authService.getToken();
     if (!token) {
-      this.topLikeError = 'Token no disponible';
-      this.topDislikeError = 'Token no disponible';
-      this.lastEvaluatedError = 'Token no disponible';
+      if (tab === 'top-like') {
+        this.topLikeError = 'Token no disponible';
+      } else if (tab === 'top-dislike') {
+        this.topDislikeError = 'Token no disponible';
+      } else if (tab === 'last-evaluated') {
+        this.lastEvaluatedError = 'Token no disponible';
+      }
       return;
     }
 
-    this.topLikeLoading = true;
-    this.topDislikeLoading = true;
-    this.lastEvaluatedLoading = true;
-    this.topLikeError = '';
-    this.topDislikeError = '';
-    this.lastEvaluatedError = '';
+    if (tab === 'top-like') {
+      this.topLikeLoading = true;
+      this.topLikeError = '';
+      this.topLikeItem = null;
+      this.imageService.getTopLike(token).subscribe({
+        next: (item) => {
+          this.topLikeItem = item;
+        },
+        error: () => {
+          this.topLikeError = 'No se pudo cargar el Top Like';
+        },
+        complete: () => {
+          this.topLikeLoading = false;
+        }
+      });
+      return;
+    }
 
-    this.imageService.getTopLike(token).subscribe({
-      next: (item) => {
-        this.topLikeItem = item;
-      },
-      error: () => {
-        this.topLikeError = 'No se pudo cargar el Top Like';
-      },
-      complete: () => {
-        this.topLikeLoading = false;
-      }
-    });
+    if (tab === 'top-dislike') {
+      this.topDislikeLoading = true;
+      this.topDislikeError = '';
+      this.topDislikeItem = null;
+      this.imageService.getTopDislike(token).subscribe({
+        next: (item) => {
+          this.topDislikeItem = item;
+        },
+        error: () => {
+          this.topDislikeError = 'No se pudo cargar el Top Dislike';
+        },
+        complete: () => {
+          this.topDislikeLoading = false;
+        }
+      });
+      return;
+    }
 
-    this.imageService.getTopDislike(token).subscribe({
-      next: (item) => {
-        this.topDislikeItem = item;
-      },
-      error: () => {
-        this.topDislikeError = 'No se pudo cargar el Top Dislike';
-      },
-      complete: () => {
-        this.topDislikeLoading = false;
-      }
-    });
-
-    this.imageService.getLastEvaluated(token).subscribe({
-      next: (item) => {
-        this.lastEvaluatedItem = item;
-      },
-      error: () => {
-        this.lastEvaluatedError = 'No se pudo cargar el Último Evaluado';
-      },
-      complete: () => {
-        this.lastEvaluatedLoading = false;
-      }
-    });
+    if (tab === 'last-evaluated') {
+      this.lastEvaluatedLoading = true;
+      this.lastEvaluatedError = '';
+      this.lastEvaluatedItem = null;
+      this.imageService.getLastEvaluated(token).subscribe({
+        next: (item) => {
+          this.lastEvaluatedItem = item;
+        },
+        error: () => {
+          this.lastEvaluatedError = 'No se pudo cargar el Último Evaluado';
+        },
+        complete: () => {
+          this.lastEvaluatedLoading = false;
+        }
+      });
+    }
   }
 
   private resetProtectedItems(): void {

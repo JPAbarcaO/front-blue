@@ -93,7 +93,7 @@
     </p-card>
 
       <p-card class="stats-card">
-        <p-tabs [(value)]="activeTab">
+        <p-tabs [(value)]="activeTab" (valueChange)="onTabChange($event)">
           <p-tablist>
             <p-tab value="top-like">
               <div class="tab-header">
