@@ -142,6 +142,8 @@ npm run build
 npm test
 ```
 
+Las pruebas unitarias están en archivos `*.spec.ts` dentro de `src/app/`.
+
 **Librerías usadas (principales)**
 
 - `@angular/*` (core, common, compiler, forms, router, platform-browser): framework y tooling principal.
