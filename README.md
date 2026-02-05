@@ -140,6 +140,9 @@ npm run build
 
 # Tests
 npm test
+
+# Tests sin abrir navegador (Headless)
+npm test -- --watch=false --browsers=ChromeHeadless
 ```
 
 Las pruebas unitarias están en archivos `*.spec.ts` dentro de `src/app/`.
@@ -171,3 +174,9 @@ Las pruebas unitarias están en archivos `*.spec.ts` dentro de `src/app/`.
 - Puerto 4200 ocupado: cierra el otro proceso o usa `npm start -- --port 4201`.
 - Error de backend: asegúrate de tener el backend corriendo en `http://localhost:3000`.
 - Versión de Node incompatible: instala la versión LTS compatible con Angular 20.
+- Tests headless fallan con “Cannot start ChromeHeadless”: instala Google Chrome o define `CHROME_BIN` con la ruta del navegador (ejemplo en Mac con Edge):
+
+```bash
+export CHROME_BIN="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"
+npm test -- --watch=false --browsers=ChromeHeadless
+```
