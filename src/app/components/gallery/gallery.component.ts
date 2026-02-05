@@ -121,8 +121,7 @@ export class GalleryComponent implements OnInit {
 
     this.isLoading = true;
     this.imageService.voteImage(this.currentImage, 'like').subscribe({
-      next: (response) => {
-        console.log('Vote response:', response);
+      next: () => {
         this.addToHistory(this.currentImage!.sourceId, this.currentImage!.name, 'like');
         this.messageService.add({
           severity: 'success',
@@ -141,9 +140,7 @@ export class GalleryComponent implements OnInit {
           detail: err.message || 'Error sending vote'
         });
       },
-      complete: () => {
-        console.log('Vote complete');
-      }
+      complete: () => {}
     });
   }
 
@@ -152,8 +149,7 @@ export class GalleryComponent implements OnInit {
 
     this.isLoading = true;
     this.imageService.voteImage(this.currentImage, 'dislike').subscribe({
-      next: (response) => {
-        console.log('Vote response:', response);
+      next: () => {
         this.addToHistory(this.currentImage!.sourceId, this.currentImage!.name, 'dislike');
         this.messageService.add({
           severity: 'success',
@@ -172,9 +168,7 @@ export class GalleryComponent implements OnInit {
           detail: err.message || 'Error sending vote'
         });
       },
-      complete: () => {
-        console.log('Vote complete');
-      }
+      complete: () => {}
     });
   }
 
