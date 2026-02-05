@@ -1,0 +1,250 @@
+<div class="gallery-container">
+  <div class="gallery-header">
+    <div class="header-content">
+      <h1>Image Gallery</h1>
+      @if (currentUser) {
+        <div class="user-info">
+          <span class="user-name">{{ currentUser.name }}</span>
+          <button pButton type="button" icon="pi pi-sign-out" (click)="logout()" class="logout-btn" label="Logout"></button>
+        </div>
+      } @else {
+        <div class="auth-buttons">
+          <button pButton type="button" label="Login" routerLink="/login" class="p-button-text p-button-plain"></button>
+          <button pButton type="button" label="Register" routerLink="/register" class="p-button-text"></button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="gallery-layout">
+
+    <div class="gallery-content">
+      <p-card class="image-card">
+      <ng-template pTemplate="header">
+        @if (currentImage) {
+          <div class="image-container">
+            <img
+              [src]="currentImage.image"
+              [alt]="currentImage.name || 'Random Image'"
+              class="displayed-image"
+            />
+            @if (isLoading) {
+              <div class="loading-overlay">
+                <p>Loading...</p>
+              </div>
+            }
+          </div>
+        }
+      </ng-template>
+
+      @if (currentImage) {
+        <div class="card-content">
+          <h2>{{ currentImage.name }}</h2>
+
+          <div class="action-buttons">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-thumbs-up"
+              label="Me Gusta"
+              [iconPos]="'left'"
+              (click)="likeImage()"
+              [disabled]="isLoading"
+              [class.liked]="hasLiked"
+              class="like-btn"
+            ></button>
+
+            <button
+              pButton
+              type="button"
+              icon="pi pi-thumbs-down"
+              label="No Me Gusta"
+              [iconPos]="'left'"
+              (click)="dislikeImage()"
+              [disabled]="isLoading"
+              [class.disliked]="hasDisliked"
+              class="dislike-btn"
+            ></button>
+
+            <button
+              pButton
+              type="button"
+              icon="pi pi-arrow-right"
+              label="Next"
+              [iconPos]="'right'"
+              (click)="nextImage()"
+              [disabled]="isLoading"
+              class="next-btn"
+            ></button>
+          </div>
+
+          <div class="stats">
+            <div class="stat-item">
+              <span class="stat-label">Source:</span>
+              <span class="stat-value">{{ currentImage.source }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">ID:</span>
+              <span class="stat-value">{{ currentImage.sourceId }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </p-card>
+
+      <p-card class="stats-card">
+        <p-tabs [(value)]="activeTab">
+          <p-tablist>
+            <p-tab value="top-like">
+              <div class="tab-header">
+                <i class="pi pi-lock"></i>
+                <span>Más Likes</span>
+              </div>
+            </p-tab>
+            <p-tab value="top-dislike">
+              <div class="tab-header">
+                <i class="pi pi-lock"></i>
+                <span>Más Dislikes</span>
+              </div>
+            </p-tab>
+            <p-tab value="last-evaluated">
+              <div class="tab-header">
+                <i class="pi pi-lock"></i>
+                <span>Último Evaluado</span>
+              </div>
+            </p-tab>
+          </p-tablist>
+
+          <p-tabpanels>
+            <p-tabpanel value="top-like">
+              @if (!currentUser) {
+                <div class="tab-locked">
+                  <i class="pi pi-lock"></i>
+                  <p>Para ver este contenido debes iniciar sesión.</p>
+                  <button pButton type="button" label="Ir a Login" routerLink="/login"></button>
+                </div>
+              } @else {
+                @if (topLikeLoading) {
+                  <p>Cargando...</p>
+                } @else if (topLikeError) {
+                  <p class="tab-error">{{ topLikeError }}</p>
+                } @else if (!topLikeItem) {
+                  <p>No hay datos aún.</p>
+                } @else {
+                  <div class="protected-item">
+                    <div class="protected-image">
+                      <img [src]="topLikeItem.image" [alt]="topLikeItem.name" />
+                    </div>
+                    <div class="protected-info">
+                      <h4>{{ topLikeItem.name }}</h4>
+                      <div class="protected-meta">Fuente: {{ topLikeItem.source }}</div>
+                      <div class="protected-meta">ID: {{ topLikeItem.sourceId }}</div>
+                      <div class="protected-meta">
+                        Likes: {{ topLikeItem.likes }} · Dislikes: {{ topLikeItem.dislikes }}
+                      </div>
+                      <div class="protected-meta">
+                        Última evaluación: {{ topLikeItem.lastEvaluatedAt || '—' }}
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </p-tabpanel>
+
+            <p-tabpanel value="top-dislike">
+              @if (!currentUser) {
+                <div class="tab-locked">
+                  <i class="pi pi-lock"></i>
+                  <p>Para ver este contenido debes iniciar sesión.</p>
+                  <button pButton type="button" label="Ir a Login" routerLink="/login"></button>
+                </div>
+              } @else {
+                @if (topDislikeLoading) {
+                  <p>Cargando...</p>
+                } @else if (topDislikeError) {
+                  <p class="tab-error">{{ topDislikeError }}</p>
+                } @else if (!topDislikeItem) {
+                  <p>No hay datos aún.</p>
+                } @else {
+                  <div class="protected-item">
+                    <div class="protected-image">
+                      <img [src]="topDislikeItem.image" [alt]="topDislikeItem.name" />
+                    </div>
+                    <div class="protected-info">
+                      <h4>{{ topDislikeItem.name }}</h4>
+                      <div class="protected-meta">Fuente: {{ topDislikeItem.source }}</div>
+                      <div class="protected-meta">ID: {{ topDislikeItem.sourceId }}</div>
+                      <div class="protected-meta">
+                        Likes: {{ topDislikeItem.likes }} · Dislikes: {{ topDislikeItem.dislikes }}
+                      </div>
+                      <div class="protected-meta">
+                        Última evaluación: {{ topDislikeItem.lastEvaluatedAt || '—' }}
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </p-tabpanel>
+
+            <p-tabpanel value="last-evaluated">
+              @if (!currentUser) {
+                <div class="tab-locked">
+                  <i class="pi pi-lock"></i>
+                  <p>Para ver este contenido debes iniciar sesión.</p>
+                  <button pButton type="button" label="Ir a Login" routerLink="/login"></button>
+                </div>
+              } @else {
+                @if (lastEvaluatedLoading) {
+                  <p>Cargando...</p>
+                } @else if (lastEvaluatedError) {
+                  <p class="tab-error">{{ lastEvaluatedError }}</p>
+                } @else if (!lastEvaluatedItem) {
+                  <p>No hay datos aún.</p>
+                } @else {
+                  <div class="protected-item">
+                    <div class="protected-image">
+                      <img [src]="lastEvaluatedItem.image" [alt]="lastEvaluatedItem.name" />
+                    </div>
+                    <div class="protected-info">
+                      <h4>{{ lastEvaluatedItem.name }}</h4>
+                      <div class="protected-meta">Fuente: {{ lastEvaluatedItem.source }}</div>
+                      <div class="protected-meta">ID: {{ lastEvaluatedItem.sourceId }}</div>
+                      <div class="protected-meta">
+                        Likes: {{ lastEvaluatedItem.likes }} · Dislikes: {{ lastEvaluatedItem.dislikes }}
+                      </div>
+                      <div class="protected-meta">
+                        Última evaluación: {{ lastEvaluatedItem.lastEvaluatedAt || '—' }}
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+      </p-card>
+    </div>
+
+    @if (actionHistory.length > 0) {
+      <div class="history-sidebar">
+        <h3>History</h3>
+        <div class="history-thumbnails">
+          @for (action of actionHistory; track action.timestamp) {
+            <div class="history-thumbnail" [class.like]="action.action === 'like'" [class.dislike]="action.action === 'dislike'" [title]="action.name">
+              <div class="thumbnail-badge">
+                @if (action.action === 'like') {
+                  <i class="pi pi-thumbs-up"></i>
+                } @else {
+                  <i class="pi pi-thumbs-down"></i>
+                }
+              </div>
+              <span class="thumbnail-label">{{ action.name | slice:0:10 }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<p-toast position="bottom-right"></p-toast>
