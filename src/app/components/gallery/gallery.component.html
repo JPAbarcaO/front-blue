@@ -117,7 +117,7 @@
 
           <p-tabpanels>
             <p-tabpanel value="top-like">
-              @if (!currentUser) {
+              @if (!canViewProtected) {
                 <div class="tab-locked">
                   <i class="pi pi-lock"></i>
                   <p>Para ver este contenido debes iniciar sesión.</p>
@@ -152,7 +152,7 @@
             </p-tabpanel>
 
             <p-tabpanel value="top-dislike">
-              @if (!currentUser) {
+              @if (!canViewProtected) {
                 <div class="tab-locked">
                   <i class="pi pi-lock"></i>
                   <p>Para ver este contenido debes iniciar sesión.</p>
@@ -187,7 +187,7 @@
             </p-tabpanel>
 
             <p-tabpanel value="last-evaluated">
-              @if (!currentUser) {
+              @if (!canViewProtected) {
                 <div class="tab-locked">
                   <i class="pi pi-lock"></i>
                   <p>Para ver este contenido debes iniciar sesión.</p>

@@ -52,6 +52,7 @@ export class GalleryComponent implements OnInit {
   topDislikeError = '';
   lastEvaluatedError = '';
   activeTab = 'top-like';
+  canViewProtected = false;
 
   constructor(
     private imageService: ImageService,
@@ -62,8 +63,9 @@ export class GalleryComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
+    this.canViewProtected = !!this.currentUser && !!this.authService.getToken();
     this.loadImage();
-    if (this.currentUser) {
+    if (this.canViewProtected) {
       this.fetchTabData(this.activeTab);
     }
   }
@@ -195,13 +197,14 @@ export class GalleryComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.resetProtectedItems();
+    this.canViewProtected = false;
     this.router.navigate(['/login']);
   }
 
   onTabChange(value: string | number | undefined): void {
     const nextValue = typeof value === 'string' ? value : `${value ?? ''}`;
     this.activeTab = nextValue || 'top-like';
-    if (this.currentUser) {
+    if (this.canViewProtected) {
       this.fetchTabData(this.activeTab);
     }
   }
@@ -209,13 +212,7 @@ export class GalleryComponent implements OnInit {
   private fetchTabData(tab: string): void {
     const token = this.authService.getToken();
     if (!token) {
-      if (tab === 'top-like') {
-        this.topLikeError = 'Token no disponible';
-      } else if (tab === 'top-dislike') {
-        this.topDislikeError = 'Token no disponible';
-      } else if (tab === 'last-evaluated') {
-        this.lastEvaluatedError = 'Token no disponible';
-      }
+      this.canViewProtected = false;
       return;
     }
 
